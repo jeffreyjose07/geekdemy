@@ -20,7 +20,7 @@ public enum Coupon {
 
         @Override
         public BigDecimal discountAmount(Order order, BigDecimal subTotal) {
-            return order != null ? order.getCheapestProgramPrice() : BigDecimal.ZERO;
+            return order != null ? order.getCheapestProgramPriceAfterDiscount() : BigDecimal.ZERO;
         }
     },
     

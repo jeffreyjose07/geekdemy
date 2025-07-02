@@ -13,22 +13,22 @@ public class BillingService {
             throw new IllegalArgumentException("Order cannot be null");
         }
         
-        BigDecimal subTotal = order.calculateSubTotal();
+        BigDecimal baseTotal = order.calculateSubTotal();
+
+        BigDecimal proDiscount = computeProDiscount(order);
+        BigDecimal membershipFee = order.membershipFee();
+
+        BigDecimal subTotal = baseTotal.subtract(proDiscount).add(membershipFee);
 
         Coupon coupon = selectCoupon(order, subTotal);
         BigDecimal couponDiscount = coupon.discountAmount(order, subTotal);
 
-        BigDecimal amountAfterCoupon = subTotal.subtract(couponDiscount);
-        BigDecimal proDiscount = computeProDiscount(order);
-        BigDecimal membershipFee = order.membershipFee();
-
-        BigDecimal totalBeforeEnrollment = amountAfterCoupon.subtract(proDiscount)
-                                                     .add(membershipFee);
+        BigDecimal totalBeforeEnrollment = subTotal.subtract(couponDiscount);
 
         BigDecimal enrollmentFee = computeEnrollmentFee(subTotal);
 
         BigDecimal total = totalBeforeEnrollment.add(enrollmentFee);
-        
+
         return new Bill(
             MoneyUtils.scale(subTotal),
             coupon,
@@ -48,7 +48,7 @@ public class BillingService {
     }
 
     private BigDecimal computeProDiscount(Order order) {
-        return order.hasProMembership() ? order.calculateProDiscount() : BigDecimal.ZERO;
+        return order.calculateProDiscount();
     }
 
     private BigDecimal computeEnrollmentFee(BigDecimal subTotal) {
