@@ -22,6 +22,11 @@ public final class Constants {
     public static final int CERTIFICATION_PRO_DISCOUNT_PERCENT = 2;
     public static final int DEGREE_PRO_DISCOUNT_PERCENT = 3;
     public static final int DIPLOMA_PRO_DISCOUNT_PERCENT = 1;
+
+    // Common constants
+    public static final BigDecimal ONE_HUNDRED = new BigDecimal("100");
+    public static final int MONEY_SCALE = 2;
+    public static final int DISCOUNT_SCALE = 4;
     
     private Constants() {
         // Prevent instantiation

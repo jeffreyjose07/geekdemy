@@ -1,8 +1,8 @@
 package com.example.geektrust.service;
 
 import com.example.geektrust.model.Bill;
+import com.example.geektrust.util.MoneyUtils;
 
-import java.math.RoundingMode;
 
 public class BillPrinter {
     public void print(Bill bill) {
@@ -26,7 +26,7 @@ public class BillPrinter {
             return "0.00";
         }
         if (amount instanceof java.math.BigDecimal) {
-            return ((java.math.BigDecimal) amount).setScale(2, RoundingMode.HALF_UP).toString();
+            return MoneyUtils.scale((java.math.BigDecimal) amount).toString();
         }
         return String.format("%.2f", amount);
     }

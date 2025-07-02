@@ -50,7 +50,7 @@ public class Order {
         return items.stream()
                 .map(item -> {
                     BigDecimal discountPercent = new BigDecimal(item.getProgram().getProDiscountPercent())
-                            .divide(new BigDecimal("100"));
+                            .divide(Constants.ONE_HUNDRED);
                     return item.getProgram().getPrice()
                             .multiply(discountPercent)
                             .multiply(new BigDecimal(item.getQuantity()));
