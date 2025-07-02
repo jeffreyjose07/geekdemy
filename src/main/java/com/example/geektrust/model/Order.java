@@ -1,11 +1,12 @@
 package com.example.geektrust.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.geektrust.Constants;
 
-import com.example.geektrust.model.Membership;
-import com.example.geektrust.model.NoMembership;
-import com.example.geektrust.model.ProMembership;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 public class Order {
     private final List<OrderItem> items = new ArrayList<>();
@@ -13,6 +14,9 @@ public class Order {
     private final List<Coupon> coupons = new ArrayList<>();
 
     public void addProgram(ProgramType program, int quantity) {
+        if (program == null || quantity <= 0) {
+            throw new IllegalArgumentException("Program cannot be null and quantity must be positive");
+        }
         items.add(new OrderItem(program, quantity));
     }
 
@@ -25,25 +29,37 @@ public class Order {
     }
 
     public void addCoupon(String code) {
+        if (code == null) {
+            return;
+        }
         try {
-            coupons.add(Coupon.valueOf(code));
+            Coupon coupon = Coupon.valueOf(code.trim().toUpperCase());
+            if (!coupons.contains(coupon)) {
+                coupons.add(coupon);
+            }
         } catch (IllegalArgumentException e) {
             // ignore unknown coupon
         }
     }
 
-    public float membershipFee() {
-        return membership.fee();
+    public BigDecimal membershipFee() {
+        return hasProMembership() ? Constants.PRO_MEMBERSHIP_FEE : BigDecimal.ZERO;
     }
 
-    public float calculateProDiscount() {
-        return (float) items.stream()
-                .mapToDouble(i -> membership.discountFor(i))
-                .sum();
+    public BigDecimal calculateProDiscount() {
+        return items.stream()
+                .map(item -> {
+                    BigDecimal discountPercent = new BigDecimal(item.getProgram().getProDiscountPercent())
+                            .divide(new BigDecimal("100"));
+                    return item.getProgram().getPrice()
+                            .multiply(discountPercent)
+                            .multiply(new BigDecimal(item.getQuantity()));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public List<OrderItem> getItems() {
-        return items;
+        return new ArrayList<>(items); // Return a copy to maintain encapsulation
     }
 
     public boolean hasCoupon(Coupon coupon) {
@@ -51,13 +67,24 @@ public class Order {
     }
 
     public int getTotalQuantity() {
-        return items.stream().mapToInt(OrderItem::getQuantity).sum();
+        return items.stream()
+                .mapToInt(OrderItem::getQuantity)
+                .sum();
     }
 
-    public float getCheapestProgramPrice() {
-        return (float) items.stream()
-                .mapToDouble(i -> i.getProgram().getPrice())
-                .min()
-                .orElse(0d);
+    public BigDecimal getCheapestProgramPrice() {
+        return items.stream()
+                .map(item -> item.getProgram().getPrice())
+                .min(Comparator.naturalOrder())
+                .orElse(BigDecimal.ZERO);
     }
+    
+    public BigDecimal calculateSubTotal() {
+        return items.stream()
+                .map(item -> item.getProgram().getPrice()
+                        .multiply(new BigDecimal(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public List<Coupon> getCoupons() { return new ArrayList<>(coupons); }
 }

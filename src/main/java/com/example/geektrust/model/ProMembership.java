@@ -1,16 +1,24 @@
 package com.example.geektrust.model;
 
-public class ProMembership implements Membership {
-    public static final float FEE = 200f;
+import com.example.geektrust.Constants;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+public class ProMembership implements Membership {
     @Override
-    public float discountFor(OrderItem item) {
+    public BigDecimal calculateDiscount(OrderItem item) {
         ProgramType program = item.getProgram();
-        return program.getPrice() * item.getQuantity() * program.getProDiscountPercent() / 100f;
+        BigDecimal discountPercent = new BigDecimal(program.getProDiscountPercent())
+                .divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP);
+        return program.getPrice()
+                .multiply(discountPercent)
+                .multiply(new BigDecimal(item.getQuantity()))
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     @Override
-    public float fee() {
-        return FEE;
+    public BigDecimal getFee() {
+        return Constants.PRO_MEMBERSHIP_FEE;
     }
 }

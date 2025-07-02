@@ -1,13 +1,15 @@
 package com.example.geektrust.model;
 
+import java.math.BigDecimal;
+
 public class NoMembership implements Membership {
     @Override
-    public float discountFor(OrderItem item) {
-        return 0f;
+    public BigDecimal calculateDiscount(OrderItem item) {
+        return BigDecimal.ZERO;
     }
 
     @Override
-    public float fee() {
-        return 0f;
+    public BigDecimal getFee() {
+        return BigDecimal.ZERO;
     }
 }

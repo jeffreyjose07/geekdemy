@@ -1,6 +1,8 @@
 package com.example.geektrust.model;
 
+import java.math.BigDecimal;
+
 public interface Membership {
-    float discountFor(OrderItem item);
-    float fee();
+    BigDecimal calculateDiscount(OrderItem item);
+    BigDecimal getFee();
 }

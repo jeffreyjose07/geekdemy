@@ -1,19 +1,23 @@
 package com.example.geektrust.model;
 
-public enum ProgramType {
-    CERTIFICATION(3000, 2),
-    DEGREE(5000, 3),
-    DIPLOMA(2500, 1);
+import com.example.geektrust.Constants;
 
-    private final int price;
+import java.math.BigDecimal;
+
+public enum ProgramType {
+    CERTIFICATION(Constants.CERTIFICATION_PRICE, Constants.CERTIFICATION_PRO_DISCOUNT_PERCENT),
+    DEGREE(Constants.DEGREE_PRICE, Constants.DEGREE_PRO_DISCOUNT_PERCENT),
+    DIPLOMA(Constants.DIPLOMA_PRICE, Constants.DIPLOMA_PRO_DISCOUNT_PERCENT);
+
+    private final BigDecimal price;
     private final int proDiscountPercent;
 
-    ProgramType(int price, int proDiscountPercent) {
+    ProgramType(BigDecimal price, int proDiscountPercent) {
         this.price = price;
         this.proDiscountPercent = proDiscountPercent;
     }
 
-    public int getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
