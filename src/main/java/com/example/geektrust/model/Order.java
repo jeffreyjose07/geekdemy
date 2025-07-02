@@ -48,14 +48,23 @@ public class Order {
 
     public BigDecimal calculateProDiscount() {
         return items.stream()
-                .map(item -> {
-                    BigDecimal discountPercent = new BigDecimal(item.getProgram().getProDiscountPercent())
-                            .divide(Constants.ONE_HUNDRED);
-                    return item.getProgram().getPrice()
-                            .multiply(discountPercent)
-                            .multiply(new BigDecimal(item.getQuantity()));
-                })
+                .map(membership::calculateDiscount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * Returns the lowest program price after applying membership discount on a
+     * single unit of each program.
+     */
+    public BigDecimal getCheapestProgramPriceAfterDiscount() {
+        return items.stream()
+                .map(item -> {
+                    BigDecimal basePrice = item.getProgram().getPrice();
+                    BigDecimal discount = membership.calculateDiscount(new OrderItem(item.getProgram(), 1));
+                    return basePrice.subtract(discount);
+                })
+                .min(Comparator.naturalOrder())
+                .orElse(BigDecimal.ZERO);
     }
 
     public List<OrderItem> getItems() {
