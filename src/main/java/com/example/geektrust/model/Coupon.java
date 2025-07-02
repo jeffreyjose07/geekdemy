@@ -98,4 +98,20 @@ public enum Coupon {
         }
         return subTotal.multiply(rate);
     }
+
+    /**
+     * Converts a string code to the corresponding {@link Coupon} instance.
+     *
+     * @param code the coupon code, case-insensitive
+     * @return the matching {@link Coupon} or {@code null} if no match is found
+     */
+    public static Coupon fromCode(String code) {
+        if (code == null) {
+            return null;
+        }
+        return java.util.Arrays.stream(values())
+                .filter(c -> c.name().equalsIgnoreCase(code.trim()))
+                .findFirst()
+                .orElse(null);
+    }
 }
