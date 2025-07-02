@@ -29,16 +29,9 @@ public class Order {
     }
 
     public void addCoupon(String code) {
-        if (code == null) {
-            return;
-        }
-        try {
-            Coupon coupon = Coupon.valueOf(code.trim().toUpperCase());
-            if (!coupons.contains(coupon)) {
-                coupons.add(coupon);
-            }
-        } catch (IllegalArgumentException e) {
-            // ignore unknown coupon
+        Coupon coupon = Coupon.fromCode(code);
+        if (coupon != null && !coupons.contains(coupon)) {
+            coupons.add(coupon);
         }
     }
 
