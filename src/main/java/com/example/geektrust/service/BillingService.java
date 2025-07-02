@@ -40,16 +40,16 @@ public class BillingService {
     }
 
     private Coupon determineCoupon(Order order, float subTotal) {
-        Coupon coupon = Coupon.NONE;
-        if (order.getTotalQuantity() > B4G1_MIN_PROGRAMS) {
-            coupon = Coupon.B4G1;
+        if (order.getTotalQuantity() >= B4G1_MIN_PROGRAMS) {
+            return Coupon.B4G1;
         }
-        if (order.hasCoupon(Coupon.DEAL_G20) && subTotal > DEAL_G20_THRESHOLD) {
-            coupon = Coupon.DEAL_G20;
-        } else if (order.hasCoupon(Coupon.DEAL_G5) && order.getTotalQuantity() > DEAL_G5_MIN_PROGRAMS) {
-            coupon = Coupon.DEAL_G5;
+        if (order.hasCoupon(Coupon.DEAL_G20) && subTotal >= DEAL_G20_THRESHOLD) {
+            return Coupon.DEAL_G20;
         }
-        return coupon;
+        if (order.hasCoupon(Coupon.DEAL_G5) && order.getTotalQuantity() >= DEAL_G5_MIN_PROGRAMS) {
+            return Coupon.DEAL_G5;
+        }
+        return Coupon.NONE;
     }
 
     private float calculateCouponDiscount(Order order, float subTotal, Coupon coupon) {
