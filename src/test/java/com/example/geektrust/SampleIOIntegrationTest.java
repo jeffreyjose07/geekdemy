@@ -77,5 +77,18 @@ public class SampleIOIntegrationTest {
                 "TOTAL 8127.25");
         assertEquals(expected, runApp(input));
     }
+
+    @Test
+    void sampleInput5() throws Exception {
+        Path input = Paths.get("sample_input", "input5.txt");
+        String expected = String.join("\n",
+                "SUB_TOTAL 10000.00",
+                "COUPON_DISCOUNT DEAL_G20 2000.00",
+                "TOTAL_PRO_DISCOUNT 0.00",
+                "PRO_MEMBERSHIP_FEE 0.00",
+                "ENROLLMENT_FEE 0.00",
+                "TOTAL 8000.00");
+        assertEquals(expected, runApp(input));
+    }
 }
 

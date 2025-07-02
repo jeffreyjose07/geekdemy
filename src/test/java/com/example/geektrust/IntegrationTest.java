@@ -97,4 +97,32 @@ public class IntegrationTest {
         String actual = out.toString().replace("\r", "");
         assertEquals(expected, actual);
     }
+
+    @Test
+    void testCase4_TwoCoupons() throws Exception {
+        Path input = Files.createTempFile("input", ".txt");
+        Files.write(input, Arrays.asList(
+                "ADD_PROGRAMME DEGREE 2",
+                "APPLY_COUPON DEAL_G5",
+                "APPLY_COUPON DEAL_G20",
+                "PRINT_BILL"
+        ));
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream original = System.out;
+        System.setOut(new PrintStream(out));
+        new CommandProcessor().run(input.toString());
+        System.setOut(original);
+
+        String expected = String.join("\n",
+                "SUB_TOTAL 10000.00",
+                "COUPON_DISCOUNT DEAL_G20 2000.00",
+                "TOTAL_PRO_DISCOUNT 0.00",
+                "PRO_MEMBERSHIP_FEE 0.00",
+                "ENROLLMENT_FEE 0.00",
+                "TOTAL 8000.00",
+                "");
+        String actual = out.toString().replace("\r", "");
+        assertEquals(expected, actual);
+    }
 }

@@ -38,10 +38,7 @@ public enum Coupon {
 
         @Override
         public BigDecimal discountAmount(Order order, BigDecimal subTotal) {
-            if (subTotal == null) {
-                return BigDecimal.ZERO;
-            }
-            return subTotal.multiply(Constants.DEAL_G20_DISCOUNT_RATE);
+            return percentageDiscount(subTotal, Constants.DEAL_G20_DISCOUNT_RATE);
         }
     },
     
@@ -58,10 +55,7 @@ public enum Coupon {
 
         @Override
         public BigDecimal discountAmount(Order order, BigDecimal subTotal) {
-            if (subTotal == null) {
-                return BigDecimal.ZERO;
-            }
-            return subTotal.multiply(Constants.DEAL_G5_DISCOUNT_RATE);
+            return percentageDiscount(subTotal, Constants.DEAL_G5_DISCOUNT_RATE);
         }
     },
     
@@ -97,4 +91,11 @@ public enum Coupon {
      * @return the discount amount
      */
     public abstract BigDecimal discountAmount(Order order, BigDecimal subTotal);
+
+    private static BigDecimal percentageDiscount(BigDecimal subTotal, BigDecimal rate) {
+        if (subTotal == null || rate == null) {
+            return BigDecimal.ZERO;
+        }
+        return subTotal.multiply(rate);
+    }
 }

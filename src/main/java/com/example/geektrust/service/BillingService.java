@@ -9,34 +9,41 @@ import com.example.geektrust.util.MoneyUtils;
 public class BillingService {
     
     public Bill generateBill(Order order) {
-        if (order == null) {
-            throw new IllegalArgumentException("Order cannot be null");
-        }
-        
-        BigDecimal baseTotal = order.calculateSubTotal();
+        validate(order);
 
-        BigDecimal proDiscount = computeProDiscount(order);
+        BigDecimal proDiscount = order.calculateProDiscount();
         BigDecimal membershipFee = order.membershipFee();
-
-        BigDecimal subTotal = baseTotal.subtract(proDiscount).add(membershipFee);
+        BigDecimal subTotal = calculateSubTotal(order.calculateSubTotal(), proDiscount, membershipFee);
 
         Coupon coupon = selectCoupon(order, subTotal);
         BigDecimal couponDiscount = coupon.discountAmount(order, subTotal);
-
-        BigDecimal totalBeforeEnrollment = subTotal.subtract(couponDiscount);
-
         BigDecimal enrollmentFee = computeEnrollmentFee(subTotal);
+        BigDecimal total = subTotal.subtract(couponDiscount).add(enrollmentFee);
 
-        BigDecimal total = totalBeforeEnrollment.add(enrollmentFee);
+        return buildBill(subTotal, coupon, couponDiscount, proDiscount, membershipFee, enrollmentFee, total);
+    }
 
+    private void validate(Order order) {
+        if (order == null) {
+            throw new IllegalArgumentException("Order cannot be null");
+        }
+    }
+
+    private BigDecimal calculateSubTotal(BigDecimal baseTotal, BigDecimal proDiscount, BigDecimal membershipFee) {
+        return baseTotal.subtract(proDiscount).add(membershipFee);
+    }
+
+    private Bill buildBill(BigDecimal subTotal, Coupon coupon, BigDecimal couponDiscount,
+                           BigDecimal proDiscount, BigDecimal membershipFee,
+                           BigDecimal enrollmentFee, BigDecimal total) {
         return new Bill(
-            MoneyUtils.scale(subTotal),
-            coupon,
-            MoneyUtils.scale(couponDiscount),
-            MoneyUtils.scale(proDiscount),
-            MoneyUtils.scale(membershipFee),
-            MoneyUtils.scale(enrollmentFee),
-            MoneyUtils.scale(total)
+                MoneyUtils.scale(subTotal),
+                coupon,
+                MoneyUtils.scale(couponDiscount),
+                MoneyUtils.scale(proDiscount),
+                MoneyUtils.scale(membershipFee),
+                MoneyUtils.scale(enrollmentFee),
+                MoneyUtils.scale(total)
         );
     }
 
@@ -45,10 +52,6 @@ public class BillingService {
             return Coupon.B4G1;
         }
         return determineBestCoupon(order, subTotal);
-    }
-
-    private BigDecimal computeProDiscount(Order order) {
-        return order.calculateProDiscount();
     }
 
     private BigDecimal computeEnrollmentFee(BigDecimal subTotal) {
