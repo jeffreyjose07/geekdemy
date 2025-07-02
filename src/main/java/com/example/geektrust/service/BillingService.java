@@ -1,12 +1,27 @@
 package com.example.geektrust.service;
 
-import com.example.geektrust.Constants;
 import com.example.geektrust.model.*;
 
 import java.math.BigDecimal;
 import com.example.geektrust.util.MoneyUtils;
 
+/**
+ * Service responsible for generating the final {@link Bill} for an order.
+ * The class now delegates coupon selection and enrollment fee calculation
+ * to dedicated components to keep this class focused on orchestration.
+ */
 public class BillingService {
+    private final CouponSelector couponSelector;
+    private final EnrollmentFeeCalculator enrollmentFeeCalculator;
+
+    public BillingService() {
+        this(new CouponSelector(), new EnrollmentFeeCalculator());
+    }
+
+    BillingService(CouponSelector couponSelector, EnrollmentFeeCalculator enrollmentFeeCalculator) {
+        this.couponSelector = couponSelector;
+        this.enrollmentFeeCalculator = enrollmentFeeCalculator;
+    }
     
     public Bill generateBill(Order order) {
         validate(order);
@@ -15,9 +30,9 @@ public class BillingService {
         BigDecimal membershipFee = order.membershipFee();
         BigDecimal subTotal = calculateSubTotal(order.calculateSubTotal(), proDiscount, membershipFee);
 
-        Coupon coupon = selectCoupon(order, subTotal);
+        Coupon coupon = couponSelector.selectCoupon(order, subTotal);
         BigDecimal couponDiscount = coupon.discountAmount(order, subTotal);
-        BigDecimal enrollmentFee = computeEnrollmentFee(subTotal);
+        BigDecimal enrollmentFee = enrollmentFeeCalculator.compute(subTotal);
         BigDecimal total = subTotal.subtract(couponDiscount).add(enrollmentFee);
 
         return Bill.builder()
@@ -42,25 +57,4 @@ public class BillingService {
     }
 
 
-    private Coupon selectCoupon(Order order, BigDecimal subTotal) {
-        if (order.getTotalQuantity() >= Constants.B4G1_MIN_PROGRAMS) {
-            return Coupon.B4G1;
-        }
-        return determineBestCoupon(order, subTotal);
-    }
-
-    private BigDecimal computeEnrollmentFee(BigDecimal subTotal) {
-        return subTotal.compareTo(Constants.ENROLLMENT_THRESHOLD) < 0
-                ? Constants.ENROLLMENT_FEE
-                : BigDecimal.ZERO;
-    }
-
-    private Coupon determineBestCoupon(Order order, BigDecimal subTotal) {
-        return order.getCoupons().stream()
-                .filter(coupon -> coupon != Coupon.B4G1)
-                .filter(coupon -> coupon.isApplicable(order, subTotal))
-                .max(java.util.Comparator.comparing(
-                        c -> c.discountAmount(order, subTotal)))
-                .orElse(Coupon.NONE);
-    }
 }
