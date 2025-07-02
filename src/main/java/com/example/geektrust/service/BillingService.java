@@ -23,8 +23,8 @@ public class BillingService {
                        Coupon.B4G1 : 
                        determineBestCoupon(order, subTotal);
         
-        // Calculate coupon discount
-        BigDecimal couponDiscount = calculateCouponDiscount(coupon, order, subTotal);
+        // Calculate coupon discount using coupon behavior
+        BigDecimal couponDiscount = coupon.discountAmount(order, subTotal);
         
         // Calculate amount after coupon discount
         BigDecimal amountAfterCoupon = subTotal.subtract(couponDiscount);
@@ -66,36 +66,6 @@ public class BillingService {
                 .filter(coupon -> coupon.isApplicable(order, subTotal))
                 .findFirst()
                 .orElse(Coupon.NONE);
-    }
-    
-    private BigDecimal calculateCouponDiscount(Coupon coupon, Order order, BigDecimal subTotal) {
-        if (coupon == null || coupon == Coupon.NONE) {
-            return BigDecimal.ZERO;
-        }
-        
-        switch (coupon) {
-            case B4G1:
-                if (order.getTotalQuantity() >= Constants.B4G1_MIN_PROGRAMS) {
-                    return order.getCheapestProgramPrice();
-                }
-                break;
-                
-            case DEAL_G20:
-                if (subTotal.compareTo(Constants.DEAL_G20_THRESHOLD) >= 0) {
-                    return subTotal.multiply(Constants.DEAL_G20_DISCOUNT_RATE)
-                                 .setScale(2, RoundingMode.HALF_UP);
-                }
-                break;
-                
-            case DEAL_G5:
-                if (order.getTotalQuantity() >= Constants.DEAL_G5_MIN_PROGRAMS) {
-                    return subTotal.multiply(Constants.DEAL_G5_DISCOUNT_RATE)
-                                 .setScale(2, RoundingMode.HALF_UP);
-                }
-                break;
-        }
-        
-        return BigDecimal.ZERO;
     }
     
     private BigDecimal calculateEnrollmentFee(BigDecimal totalBeforeEnrollment) {

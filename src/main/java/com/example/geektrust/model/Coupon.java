@@ -17,6 +17,11 @@ public enum Coupon {
         public boolean isApplicable(Order order, BigDecimal subTotal) {
             return order != null && order.getTotalQuantity() >= Constants.B4G1_MIN_PROGRAMS;
         }
+
+        @Override
+        public BigDecimal discountAmount(Order order, BigDecimal subTotal) {
+            return order != null ? order.getCheapestProgramPrice() : BigDecimal.ZERO;
+        }
     },
     
     /**
@@ -25,10 +30,18 @@ public enum Coupon {
     DEAL_G20 {
         @Override
         public boolean isApplicable(Order order, BigDecimal subTotal) {
-            return order != null && 
-                   order.hasCoupon(this) && 
-                   subTotal != null && 
+            return order != null &&
+                   order.hasCoupon(this) &&
+                   subTotal != null &&
                    subTotal.compareTo(Constants.DEAL_G20_THRESHOLD) >= 0;
+        }
+
+        @Override
+        public BigDecimal discountAmount(Order order, BigDecimal subTotal) {
+            if (subTotal == null) {
+                return BigDecimal.ZERO;
+            }
+            return subTotal.multiply(Constants.DEAL_G20_DISCOUNT_RATE);
         }
     },
     
@@ -38,9 +51,17 @@ public enum Coupon {
     DEAL_G5 {
         @Override
         public boolean isApplicable(Order order, BigDecimal subTotal) {
-            return order != null && 
-                   order.hasCoupon(this) && 
+            return order != null &&
+                   order.hasCoupon(this) &&
                    order.getTotalQuantity() >= Constants.DEAL_G5_MIN_PROGRAMS;
+        }
+
+        @Override
+        public BigDecimal discountAmount(Order order, BigDecimal subTotal) {
+            if (subTotal == null) {
+                return BigDecimal.ZERO;
+            }
+            return subTotal.multiply(Constants.DEAL_G5_DISCOUNT_RATE);
         }
     },
     
@@ -52,6 +73,11 @@ public enum Coupon {
         public boolean isApplicable(Order order, BigDecimal subTotal) {
             return false;
         }
+
+        @Override
+        public BigDecimal discountAmount(Order order, BigDecimal subTotal) {
+            return BigDecimal.ZERO;
+        }
     };
 
     /**
@@ -62,18 +88,13 @@ public enum Coupon {
      * @return true if the coupon is applicable, false otherwise
      */
     public abstract boolean isApplicable(Order order, BigDecimal subTotal);
-    
+
     /**
-     * Gets the discount amount for this coupon based on the order and subtotal.
-     * This is now handled by BillingService for better encapsulation.
+     * Calculates the discount amount provided by this coupon.
      *
-     * @param order the order to calculate discount for
+     * @param order the order to calculate the discount for
      * @param subTotal the subtotal of the order
-     * @return the discount amount (always zero, as calculation is handled by BillingService)
-     * @deprecated Use BillingService.calculateCouponDiscount() instead
+     * @return the discount amount
      */
-    @Deprecated
-    public BigDecimal discountAmount(Order order, BigDecimal subTotal) {
-        return BigDecimal.ZERO;
-    }
+    public abstract BigDecimal discountAmount(Order order, BigDecimal subTotal);
 }
