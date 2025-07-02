@@ -12,8 +12,8 @@ public class Bill {
     private final BigDecimal enrollmentFee;
     private final BigDecimal total;
 
-    public Bill(BigDecimal subTotal, Coupon coupon, BigDecimal couponDiscount, 
-                BigDecimal proDiscount, BigDecimal membershipFee, 
+    public Bill(BigDecimal subTotal, Coupon coupon, BigDecimal couponDiscount,
+                BigDecimal proDiscount, BigDecimal membershipFee,
                 BigDecimal enrollmentFee, BigDecimal total) {
         this.subTotal = subTotal;
         this.coupon = coupon != null ? coupon : Coupon.NONE;
@@ -22,6 +22,60 @@ public class Bill {
         this.membershipFee = membershipFee != null ? membershipFee : BigDecimal.ZERO;
         this.enrollmentFee = enrollmentFee != null ? enrollmentFee : BigDecimal.ZERO;
         this.total = total != null ? total : BigDecimal.ZERO;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private BigDecimal subTotal;
+        private Coupon coupon = Coupon.NONE;
+        private BigDecimal couponDiscount = BigDecimal.ZERO;
+        private BigDecimal proDiscount = BigDecimal.ZERO;
+        private BigDecimal membershipFee = BigDecimal.ZERO;
+        private BigDecimal enrollmentFee = BigDecimal.ZERO;
+        private BigDecimal total = BigDecimal.ZERO;
+
+        public Builder subTotal(BigDecimal subTotal) {
+            this.subTotal = subTotal;
+            return this;
+        }
+
+        public Builder coupon(Coupon coupon) {
+            this.coupon = coupon != null ? coupon : Coupon.NONE;
+            return this;
+        }
+
+        public Builder couponDiscount(BigDecimal couponDiscount) {
+            this.couponDiscount = couponDiscount != null ? couponDiscount : BigDecimal.ZERO;
+            return this;
+        }
+
+        public Builder proDiscount(BigDecimal proDiscount) {
+            this.proDiscount = proDiscount != null ? proDiscount : BigDecimal.ZERO;
+            return this;
+        }
+
+        public Builder membershipFee(BigDecimal membershipFee) {
+            this.membershipFee = membershipFee != null ? membershipFee : BigDecimal.ZERO;
+            return this;
+        }
+
+        public Builder enrollmentFee(BigDecimal enrollmentFee) {
+            this.enrollmentFee = enrollmentFee != null ? enrollmentFee : BigDecimal.ZERO;
+            return this;
+        }
+
+        public Builder total(BigDecimal total) {
+            this.total = total != null ? total : BigDecimal.ZERO;
+            return this;
+        }
+
+        public Bill build() {
+            return new Bill(subTotal, coupon, couponDiscount, proDiscount,
+                    membershipFee, enrollmentFee, total);
+        }
     }
 
     public BigDecimal getSubTotal() { 
