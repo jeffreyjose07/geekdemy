@@ -9,10 +9,6 @@ import java.math.BigDecimal;
  * Each coupon has specific rules for applicability and discount calculation.
  */
 public enum Coupon {
-    private static final BigDecimal DEAL_G20_THRESHOLD = new BigDecimal("10000.00");
-    private static final BigDecimal DEAL_G20_DISCOUNT_RATE = new BigDecimal("0.20");
-    private static final BigDecimal DEAL_G5_DISCOUNT_RATE = new BigDecimal("0.05");
-    private static final int DEAL_G5_MIN_PROGRAMS = 2;
 
     /**
      * Buy 4 Get 1 Free - Applies to the cheapest program when 4 or more programs are purchased.
@@ -79,6 +75,11 @@ public enum Coupon {
             return BigDecimal.ZERO;
         }
     };
+
+    private static final BigDecimal DEAL_G20_THRESHOLD = new BigDecimal("10000.00");
+    private static final BigDecimal DEAL_G20_DISCOUNT_RATE = new BigDecimal("0.20");
+    private static final BigDecimal DEAL_G5_DISCOUNT_RATE = new BigDecimal("0.05");
+    private static final int DEAL_G5_MIN_PROGRAMS = 2;
 
     /**
      * Checks if this coupon is applicable to the given order and subtotal.
