@@ -61,7 +61,8 @@ public class BillingService {
         return order.getCoupons().stream()
                 .filter(coupon -> coupon != Coupon.B4G1)
                 .filter(coupon -> coupon.isApplicable(order, subTotal))
-                .findFirst()
+                .max(java.util.Comparator.comparing(
+                        c -> c.discountAmount(order, subTotal)))
                 .orElse(Coupon.NONE);
     }
 }
