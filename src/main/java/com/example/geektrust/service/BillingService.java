@@ -20,7 +20,15 @@ public class BillingService {
         BigDecimal enrollmentFee = computeEnrollmentFee(subTotal);
         BigDecimal total = subTotal.subtract(couponDiscount).add(enrollmentFee);
 
-        return buildBill(subTotal, coupon, couponDiscount, proDiscount, membershipFee, enrollmentFee, total);
+        return Bill.builder()
+                .subTotal(MoneyUtils.scale(subTotal))
+                .coupon(coupon)
+                .couponDiscount(MoneyUtils.scale(couponDiscount))
+                .proDiscount(MoneyUtils.scale(proDiscount))
+                .membershipFee(MoneyUtils.scale(membershipFee))
+                .enrollmentFee(MoneyUtils.scale(enrollmentFee))
+                .total(MoneyUtils.scale(total))
+                .build();
     }
 
     private void validate(Order order) {
@@ -33,19 +41,6 @@ public class BillingService {
         return baseTotal.subtract(proDiscount).add(membershipFee);
     }
 
-    private Bill buildBill(BigDecimal subTotal, Coupon coupon, BigDecimal couponDiscount,
-                           BigDecimal proDiscount, BigDecimal membershipFee,
-                           BigDecimal enrollmentFee, BigDecimal total) {
-        return new Bill(
-                MoneyUtils.scale(subTotal),
-                coupon,
-                MoneyUtils.scale(couponDiscount),
-                MoneyUtils.scale(proDiscount),
-                MoneyUtils.scale(membershipFee),
-                MoneyUtils.scale(enrollmentFee),
-                MoneyUtils.scale(total)
-        );
-    }
 
     private Coupon selectCoupon(Order order, BigDecimal subTotal) {
         if (order.getTotalQuantity() >= Constants.B4G1_MIN_PROGRAMS) {
