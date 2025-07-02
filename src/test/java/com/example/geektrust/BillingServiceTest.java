@@ -51,4 +51,28 @@ public class BillingServiceTest {
         assertEquals(Coupon.DEAL_G5, bill.getCoupon());
         assertEquals(5725f, bill.getTotal(), 0.001); // (5500 - 275) + 500 enrollment
     }
+
+    @Test
+    void shouldChargeMembershipFeeForProUsers() {
+        Order order = new Order();
+        order.addProgram(ProgramType.CERTIFICATION, 1);
+        order.addProMembership();
+
+        Bill bill = billingService.generateBill(order);
+
+        assertEquals(200f, bill.getMembershipFee(), 0.001);
+        assertEquals(3640f, bill.getTotal(), 0.001);
+    }
+
+    @Test
+    void shouldWaiveEnrollmentFeeWhenTotalAboveThreshold() {
+        Order order = new Order();
+        order.addProgram(ProgramType.DEGREE, 2); // 10000
+        order.addProMembership();
+        order.addCoupon("DEAL_G20");
+
+        Bill bill = billingService.generateBill(order);
+
+        assertEquals(0f, bill.getEnrollmentFee(), 0.001);
+    }
 }

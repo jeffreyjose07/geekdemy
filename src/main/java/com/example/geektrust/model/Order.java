@@ -39,4 +39,11 @@ public class Order {
     public int getTotalQuantity() {
         return items.stream().mapToInt(OrderItem::getQuantity).sum();
     }
+
+    public float getCheapestProgramPrice() {
+        return (float) items.stream()
+                .mapToDouble(i -> i.getProgram().getPrice())
+                .min()
+                .orElse(0d);
+    }
 }
