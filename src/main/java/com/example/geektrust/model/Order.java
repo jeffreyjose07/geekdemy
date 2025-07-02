@@ -3,9 +3,13 @@ package com.example.geektrust.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.geektrust.model.Membership;
+import com.example.geektrust.model.NoMembership;
+import com.example.geektrust.model.ProMembership;
+
 public class Order {
     private final List<OrderItem> items = new ArrayList<>();
-    private boolean proMembership;
+    private Membership membership = new NoMembership();
     private final List<Coupon> coupons = new ArrayList<>();
 
     public void addProgram(ProgramType program, int quantity) {
@@ -13,11 +17,11 @@ public class Order {
     }
 
     public void addProMembership() {
-        this.proMembership = true;
+        this.membership = new ProMembership();
     }
 
     public boolean hasProMembership() {
-        return proMembership;
+        return membership instanceof ProMembership;
     }
 
     public void addCoupon(String code) {
@@ -26,6 +30,16 @@ public class Order {
         } catch (IllegalArgumentException e) {
             // ignore unknown coupon
         }
+    }
+
+    public float membershipFee() {
+        return membership.fee();
+    }
+
+    public float calculateProDiscount() {
+        return (float) items.stream()
+                .mapToDouble(i -> membership.discountFor(i))
+                .sum();
     }
 
     public List<OrderItem> getItems() {
