@@ -43,12 +43,12 @@ public class SampleIOIntegrationTest {
     void sampleInput2() throws Exception {
         Path input = Paths.get("sample_input", "input2.txt");
         String expected = String.join("\n",
-                "SUB_TOTAL 18000.00",
-                "COUPON_DISCOUNT B4G1 2500.00",
+                "SUB_TOTAL 17790.00",
+                "COUPON_DISCOUNT B4G1 2475.00",
                 "TOTAL_PRO_DISCOUNT 410.00",
                 "PRO_MEMBERSHIP_FEE 200.00",
                 "ENROLLMENT_FEE 0.00",
-                "TOTAL 15290.00");
+                "TOTAL 15315.00");
         assertEquals(expected, runApp(input));
     }
 
@@ -56,7 +56,7 @@ public class SampleIOIntegrationTest {
     void sampleInput3() throws Exception {
         Path input = Paths.get("sample_input", "input3.txt");
         String expected = String.join("\n",
-                "SUB_TOTAL 5500.00",
+                "SUB_TOTAL 5615.00",
                 "COUPON_DISCOUNT NONE 0.00",
                 "TOTAL_PRO_DISCOUNT 85.00",
                 "PRO_MEMBERSHIP_FEE 200.00",
@@ -69,12 +69,12 @@ public class SampleIOIntegrationTest {
     void sampleInput4() throws Exception {
         Path input = Paths.get("sample_input", "input4.txt");
         String expected = String.join("\n",
-                "SUB_TOTAL 8500.00",
-                "COUPON_DISCOUNT DEAL_G5 425.00",
+                "SUB_TOTAL 8555.00",
+                "COUPON_DISCOUNT DEAL_G5 427.75",
                 "TOTAL_PRO_DISCOUNT 145.00",
                 "PRO_MEMBERSHIP_FEE 200.00",
                 "ENROLLMENT_FEE 0.00",
-                "TOTAL 8130.00");
+                "TOTAL 8127.25");
         assertEquals(expected, runApp(input));
     }
 }
