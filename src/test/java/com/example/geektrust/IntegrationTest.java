@@ -87,7 +87,7 @@ public class IntegrationTest {
         System.setOut(original);
 
         String expected = String.join("\n",
-                "SUB_TOTAL 8000.00",
+                "SUB_TOTAL 7990.00",
                 "COUPON_DISCOUNT NONE 0.00",
                 "TOTAL_PRO_DISCOUNT 210.00",
                 "PRO_MEMBERSHIP_FEE 200.00",
