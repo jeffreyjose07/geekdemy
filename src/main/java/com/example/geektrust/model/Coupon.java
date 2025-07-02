@@ -9,9 +9,15 @@ import java.math.BigDecimal;
  * Each coupon has specific rules for applicability and discount calculation.
  */
 public enum Coupon {
+    private static final BigDecimal DEAL_G20_THRESHOLD = new BigDecimal("10000.00");
+    private static final BigDecimal DEAL_G20_DISCOUNT_RATE = new BigDecimal("0.20");
+    private static final BigDecimal DEAL_G5_DISCOUNT_RATE = new BigDecimal("0.05");
+    private static final int DEAL_G5_MIN_PROGRAMS = 2;
+
     /**
      * Buy 4 Get 1 Free - Applies to the cheapest program when 4 or more programs are purchased.
      */
+
     B4G1 {
         @Override
         public boolean isApplicable(Order order, BigDecimal subTotal) {
@@ -33,12 +39,12 @@ public enum Coupon {
             return order != null &&
                    order.hasCoupon(this) &&
                    subTotal != null &&
-                   subTotal.compareTo(Constants.DEAL_G20_THRESHOLD) >= 0;
+                   subTotal.compareTo(DEAL_G20_THRESHOLD) >= 0;
         }
 
         @Override
         public BigDecimal discountAmount(Order order, BigDecimal subTotal) {
-            return percentageDiscount(subTotal, Constants.DEAL_G20_DISCOUNT_RATE);
+            return percentageDiscount(subTotal, DEAL_G20_DISCOUNT_RATE);
         }
     },
     
@@ -50,12 +56,12 @@ public enum Coupon {
         public boolean isApplicable(Order order, BigDecimal subTotal) {
             return order != null &&
                    order.hasCoupon(this) &&
-                   order.getTotalQuantity() >= Constants.DEAL_G5_MIN_PROGRAMS;
+                   order.getTotalQuantity() >= DEAL_G5_MIN_PROGRAMS;
         }
 
         @Override
         public BigDecimal discountAmount(Order order, BigDecimal subTotal) {
-            return percentageDiscount(subTotal, Constants.DEAL_G5_DISCOUNT_RATE);
+            return percentageDiscount(subTotal, DEAL_G5_DISCOUNT_RATE);
         }
     },
     
